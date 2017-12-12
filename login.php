@@ -1,16 +1,16 @@
-<?php include 'header.php'?>
+<?php include 'includes/header.php'?>
 
   <form>
     <div class="form-group row">
       <label for="inputPseudo" class="col-sm-2 col-form-label">Pseudo</label>
       <div class="col-sm-10">
-        <input type="text" class="form-control" id="inputPseudo" placeholder="Pseudo">
+        <input type="text" class="form-control" id="inputPseudo" placeholder="Pseudo" required>
       </div>
     </div>
     <div class="form-group row">
       <label for="inputPassword" class="col-sm-2 col-form-label">Password</label>
       <div class="col-sm-10">
-        <input type="password" class="form-control" id="inputPassword" placeholder="Password">
+        <input type="password" class="form-control" id="inputPassword" placeholder="Password" required>
       </div>
     </div>
     <div class="form-group">
@@ -21,4 +21,4 @@
   </form>
 
 
-<?php include 'footer.php'?>
+<?php include 'includes/footer.php'?>
