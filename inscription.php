@@ -1,5 +1,4 @@
-<?php include 'includes/header.php'?>
-
+<?php require 'includes/functions.php' ?>
 
 <?php
 	if(!empty($_POST)){
@@ -41,15 +40,28 @@
 		}
 
 		if(empty($errors)){
-			$req = $pdo->prepare("INSERT INTO users SET nom = ?, prenom = ?, email = ?, pseudo = ?, mdp = ? ");
+			$req = $pdo->prepare("INSERT INTO users SET nom = ?, prenom = ?, email = ?, pseudo = ?, mdp = ? , confirm_token= ?");
 			$mdp = password_hash($_POST['mdp'], PASSWORD_BCRYPT);
-			$req->execute([$_POST['nom'], $_POST['prenom'], $_POST['email'], $_POST['pseudo'], $mdp]);
-			die("Votre compte a bien été créé");
+			$token = str_random(60);
+			debug($token);
+			$req->execute([$_POST['nom'], $_POST['prenom'], $_POST['email'], $_POST['pseudo'], $mdp, $token]);
+			$user_id = $pdo->lastInsertId();
+			var_dump($user_id);
+			var_dump($_POST['email']);
+			$headers =  'MIME-Version: 1.0' . "\r\n"; 
+			$headers .= 'From: Christian TAGUEJOU <christiantaguejou@gmail.com>' . "\r\n";
+			$headers .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n"; 
+			ini_set('SMTP','smtp.free.fr');
+			mail($_POST['email'], 'Confirmation de votre la création de votre compte', "Afin de valider votre compte, merci de cliquer sur ce lien\n\nhttp://localhost:8012/BuyMany/confirm.php?id=$user_id&token=$token", $headers);
+			header('Location: index.php');
+			exit();
 		}
 		//debug($errors);
 	}
 ?>
 
+<?php include 'includes/header.php'?>
+<?php if(isset($errors)):?>
 <?php if(empty(!$errors)):?>
 	<div class="alert alert-danger">
 		<p>Vous n'avez pas rempli le formulaire correctement</p>
@@ -59,6 +71,7 @@
 			</ul>
 		<?php endforeach; ?>
 	</div>
+<?php endif; ?>
 <?php endif; ?>
 
  <form action="" method="POST">

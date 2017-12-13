@@ -1,5 +1,7 @@
-<?php include 'includes/header.php'?>
+<?php include 'includes/header.php';
+ include 'includes/functions.php';?>
 
+	<?php debug($_SESSION);?>
   <form>
     <div class="form-group row">
       <label for="inputPseudo" class="col-sm-2 col-form-label">Pseudo</label>
