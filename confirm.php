@@ -14,6 +14,7 @@ if($user && $user->confirm_token == $token){
 	//Reset du token
 	$req = $pdo->prepare('UPDATE users SET confirm_token = NULL, confirm_at = NOW() WHERE id = ?');
 	$req->execute([$user_id]);
+	$_SESSION['flash']['success'] = "Votre compte a bien été validé ! ";
 	//On sauvegarde les données de l'utilisateur dans la variable de session
 	$_SESSION['auth'] = $user;
 	var_dump($req);

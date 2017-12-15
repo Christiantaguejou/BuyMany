@@ -19,7 +19,7 @@
 		        <a class="nav-link" href="index.php">Accueil <span class="sr-only">(current)</span></a>
 		      </li>
 		      	<li class="nav-item">
-		        <a class="nav-link" href="#">Menu 2</a>
+		        <a class="nav-link" href="compte.php">Mon Compte</a>
 		      </li>
 		      <li class="nav-item">
 		        <a class="nav-link" href="#">Menu 3</a>
@@ -39,12 +39,18 @@
  		
 	 	</div>
 	   <ul class="nav navbar-nav navbar-right" >
+	   	<?php if(isset($_SESSION['auth'])):?>
+			<li class="nav-item">
+	      	<a class="nav-link" href="logout.php" >Déconnexion</a>
+	      </li>
+	   	<?php else:?>
 	      <li class="nav-item">
 	      	<a class="nav-link" href="login.php" >Connexion</a>
 	      </li>
 	      <li class="nav-item">
 	      	<a class="nav-link" href="inscription.php" >Inscription</a>
 	      </li>
+	    <?php endif;?>
 	    </ul>
 	</nav>
 	<div class="container">
@@ -57,6 +63,4 @@
 				</div>
 			<?php endforeach; ?>
 			<?php unset($_SESSION['flash']) ;?>
-		<?php endif ;?>
-
-
+		<?php endif;?>

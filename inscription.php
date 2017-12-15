@@ -1,6 +1,7 @@
 <?php require 'includes/functions.php' ?>
 
 <?php
+session_start();
 	if(!empty($_POST)){
 
 		$errors = array();
@@ -10,7 +11,7 @@
 			$errors['nom'] = "Votre nom n'est pas valide ! (alphabetique)";
 		} 
 
-		if(empty($_POST['prenom']) || !preg_match('/^[a-zA-Z0-9]+$/', $_POST['prenom'])){
+		if(empty($_POST['prenom']) || !preg_match('/^[a-zA-Z]+$/', $_POST['prenom'])){
 			$errors['prenom'] = "Votre prénom n'est pas valide ! (alphabetique)";
 		}
 		if(empty($_POST['pseudo']) || !preg_match('/^[a-zA-Z0-9_]+$/', $_POST['pseudo'])){
@@ -51,9 +52,13 @@
 			$headers =  'MIME-Version: 1.0' . "\r\n"; 
 			$headers .= 'From: Christian TAGUEJOU <christiantaguejou@gmail.com>' . "\r\n";
 			$headers .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n"; 
-			ini_set('SMTP','smtp.free.fr');
-			mail($_POST['email'], 'Confirmation de votre la création de votre compte', "Afin de valider votre compte, merci de cliquer sur ce lien\n\nhttp://localhost:8012/BuyMany/confirm.php?id=$user_id&token=$token", $headers);
-			header('Location: index.php');
+			//ini_set('SMTP','smtp.free.fr');
+			ini_set('SMTP', 'smtp.free.fr');
+			ini_set('smtp_port', '25');
+		  	ini_set('Christian TAGUEJOU', 'christiantaguejou@gmail.com');
+			mail($_POST['email'], 'Confirmation de la création de votre compte sur BuyMany', "Afin de valider votre compte, merci de cliquer sur ce lien\n\nhttp://localhost:8012/BuyMany/confirm.php?id=$user_id&token=$token", $headers);
+			$_SESSION['flash']['success'] = "Un email de confirmation vous a été envoyé ! ";
+			header('Location: login.php');
 			exit();
 		}
 		//debug($errors);

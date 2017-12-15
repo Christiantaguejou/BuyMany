@@ -1,3 +1,4 @@
+<? include 'functions.php'; ?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -35,14 +36,32 @@
  		
 	 	</div>
 	   <ul class="nav navbar-nav navbar-right" >
-	      <li class="nav-item">
-	      	<a class="nav-link" href="login.php" >Connexion</a>
-	      </li>
-	      <li class="nav-item">
-	      	<a class="nav-link" href="inscription.php" >Inscription</a>
-	      </li>
+	   	<?php debug($_SESSION['auth']);?>
+
+	   	<?php if(isset($_SESSION['auth'])):?>
+	   		<li class="nav-item">
+		      	<a class="nav-link" href="logout.php" >Déconnexion</a>
+		     </li>
+	   	<?php else:?>
+		      <li class="nav-item">
+		      	<a class="nav-link" href="login.php" >Connexion</a>
+		      </li>
+		      <li class="nav-item">
+		      	<a class="nav-link" href="inscription.php" >Inscription</a>
+		      </li>
+		<?php endif;?>
 	    </ul>
 	</nav>
 	<div class="container">
 		<div style="margin-bottom: 30px"></div>
+		<?php if(isset($_SESSION['flash'])): ?>
+			<?php foreach($_SESSION['flash']  as $type => $message):?>
+				<div class="alert alert-<?= $type?>">
+					<?= $message; ?>
+				</div>
+			<?php endforeach; ?>
+			<?php unset($_SESSION['flash']) ;?>
+		<?php endif ;?>
+
+
 
