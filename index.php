@@ -1,3 +1,4 @@
+<?php include 'includes/autoloader.php';?>
 <?php include 'includes/header.php';?>
 
 	<div class="container">

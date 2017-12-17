@@ -1,71 +1,44 @@
-<?php require 'includes/functions.php' ?>
+<?php require 'includes/functions.php';
+require 'includes/autoloader.php'; 
+?>
 
 <?php
 session_start();
 	if(!empty($_POST)){
-
 		$errors = array();
 		require_once'includes/db.php';
 
-		if(empty($_POST['nom']) || !preg_match('/^[a-zA-Z]+$/', $_POST['nom'])){
-			$errors['nom'] = "Votre nom n'est pas valide ! (alphabetique)";
-		} 
+		$db = App::getDatabase();
+		$validation = new Validation($_POST);
+		$validation->isAlpha('nom', "Votre nom n'est pas valide ! (alphabetique)");
+		$validation->isAlphanumeriq('pseudo', "Votre pseudo n'est pas valide ! (alphanumérique)");
+		
+		$validation->isPseudoUniq('pseudo',$db, 'users', "Ce pseudo est déjà pris ");			
+		
+		$validation->isAlpha('prenom', "Votre prénom n'est pas valide ! (alphabetique)");
 
-		if(empty($_POST['prenom']) || !preg_match('/^[a-zA-Z]+$/', $_POST['prenom'])){
-			$errors['prenom'] = "Votre prénom n'est pas valide ! (alphabetique)";
-		}
-		if(empty($_POST['pseudo']) || !preg_match('/^[a-zA-Z0-9_]+$/', $_POST['pseudo'])){
-			$errors['pseudo'] = "Votre pseudo n'est pas valide ! (alphanumérique)";
-		}else{
-			$req = $pdo->prepare('SELECT id FROM users WHERE pseudo = ?');
-			$req->execute([$_POST['pseudo']]);
-			$pseudo = $req->fetch();
-			if($pseudo){
-				$errors['pseudo'] = 'Ce pseudo est déjà pris';
-			}
-		}
+		$validation->isEmail('email',"Votre email n'est pas valide ! ");
+		
+		$validation->isEmailUniq('email',$db, 'users', "Cet email est déjà utilisé par un autre compte");		
+		
+		$validation->isConfirmed('mdp', "Vous devez rentrer un mot de passe valide");
 
-		if(empty($_POST['email']) || !filter_var($_POST['email'], FILTER_VALIDATE_EMAIL)){
-			$errors['email'] = "Votre email n'est pas valide !";
-		} else{
-			$req = $pdo->prepare('SELECT id FROM users WHERE email = ?');
-			$req->execute([$_POST['email']]);
-			$email = $req->fetch();
-			if($email){
-				$errors['email'] = 'Cet email est déjà utilisé par un autre compte';
-			}
-		}
+		if($validation->isValid()){
 
-		if(empty($_POST['mdp']) || $_POST['mdp'] != $_POST['mdpConfirm']){
-			$errors['mdp'] = "Votre devez rentrer un mot de passe valide !";
-		}
+			$user = new User();
+			$user->inscription($db, $_POST['nom'], $_POST['prenom'], $_POST['email'], $_POST['pseudo'], $_POST['mdp']);
+			Session::getInstance()->setFlash('success','Un email de confirmation vous a été envoyé pour valider votre compte' );
 
-		if(empty($errors)){
-			$req = $pdo->prepare("INSERT INTO users SET nom = ?, prenom = ?, email = ?, pseudo = ?, mdp = ? , confirm_token= ?");
-			$mdp = password_hash($_POST['mdp'], PASSWORD_BCRYPT);
-			$token = str_random(60);
-			debug($token);
-			$req->execute([$_POST['nom'], $_POST['prenom'], $_POST['email'], $_POST['pseudo'], $mdp, $token]);
-			$user_id = $pdo->lastInsertId();
-			var_dump($user_id);
-			var_dump($_POST['email']);
-			$headers =  'MIME-Version: 1.0' . "\r\n"; 
-			$headers .= 'From: Christian TAGUEJOU <christiantaguejou@gmail.com>' . "\r\n";
-			$headers .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n"; 
-			//ini_set('SMTP','smtp.free.fr');
-			ini_set('SMTP', 'smtp.free.fr');
-			ini_set('smtp_port', '25');
-		  	ini_set('Christian TAGUEJOU', 'christiantaguejou@gmail.com');
-			mail($_POST['email'], 'Confirmation de la création de votre compte sur BuyMany', "Afin de valider votre compte, merci de cliquer sur ce lien\n\nhttp://localhost:8012/BuyMany/confirm.php?id=$user_id&token=$token", $headers);
-			$_SESSION['flash']['success'] = "Un email de confirmation vous a été envoyé ! ";
-			header('Location: login.php');
+			App::redirect('login.php');
 			exit();
+		} else {
+			$errors = $validation->getErrors();
 		}
 		//debug($errors);
 	}
 ?>
 
-<?php include 'includes/header.php'?>
+<?php include 'includes/header.php';?>
 <?php if(isset($errors)):?>
 <?php if(empty(!$errors)):?>
 	<div class="alert alert-danger">

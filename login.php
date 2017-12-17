@@ -1,10 +1,14 @@
 <?php include 'includes/header.php';
  include 'includes/functions.php';
+  include 'includes/autoloader.php';
   include 'includes/db.php';
 
 
 if(!empty($_POST) && !empty($_POST['pseudo']) && !empty($_POST['mdp'])){
 
+    /*    $db = App::getDatabase();
+    $valid = new Validation($_POST);
+    $valid->isLoginValid($db, 'pseudo', 'Identifiant ou mot de passe incorrect');*/
     $req = $pdo->prepare('SELECT * FROM users WHERE (pseudo = :pseudo OR email = :pseudo) AND confirm_at IS NOT NULL');
     $req->execute(['pseudo'=>$_POST['pseudo']]);
     $user = $req->fetch();
@@ -16,7 +20,8 @@ if(!empty($_POST) && !empty($_POST['pseudo']) && !empty($_POST['mdp'])){
       }elseif(password_verify($_POST['mdp'], $user->mdp)){
       
       $_SESSION['auth'] = $user;
-      $_SESSION['flash']['success'] = "Vous êtes maintenant connecté à BuyMany!";
+     // $_SESSION['flash']['success'] = "Vous êtes maintenant connecté à BuyMany!";
+      Session::getInstance()->setFlash('success','Vous êtes maintenant connecté à BuyMany!' );
 
       if($_POST['remember']){
         $remember_token = str_random(250);
@@ -27,7 +32,8 @@ if(!empty($_POST) && !empty($_POST['pseudo']) && !empty($_POST['mdp'])){
       header('Location: compte.php');
       exit();
     } else {
-      $_SESSION['flash']['danger'] = "Pseudo ou mot de passe incorrect";
+     $_SESSION['flash']['danger'] = "Pseudo ou mot de passe incorrect";
+      //Session::getInstance()->setFlash('danger','Identifiant ou mot de passe incorrect' );
     }
   
   } 

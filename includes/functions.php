@@ -8,3 +8,14 @@ function str_random($length){
 	return substr(str_shuffle(str_repeat($alphabet, $length)), 0, $length);
 
 }
+
+function logged_only(){
+	if(session_status() == PHP_SESSION_NONE){
+		session_start(); 
+	}
+	if(!isset($_SESSION['auth'])){
+	$_SESSION['flash']['danger'] = "Vous n'vez pas le droit d'acceder à cette page";
+	header('Location: login.php');
+	exit();
+}
+}

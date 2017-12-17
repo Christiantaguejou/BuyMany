@@ -1,14 +1,13 @@
-<?php include 'includes/header.php';?>
-
-<?php 
+<?php include 'includes/header.php';
+include 'includes/autoloader.php';
 include 'includes/functions.php';?>
 
 <h1>Votre compte</h1>
 
 <?php 
-if(session_status() == PHP_SESSION_NONE){
-		session_start(); 
-	}
+//logged_only();
+$auth = new User();
+$auth -> restrict(Session::getInstance());
 
 if(!empty($_POST)){
 	if(empty($_POST['mdp']) || $_POST['mdp'] != $_POST['mdp2']){

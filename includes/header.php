@@ -18,9 +18,15 @@
 		      <li class="nav-item active">
 		        <a class="nav-link" href="index.php">Accueil <span class="sr-only">(current)</span></a>
 		      </li>
+		      <?php if(isset($_SESSION['auth'])):?>
 		      	<li class="nav-item">
 		        <a class="nav-link" href="compte.php">Mon Compte</a>
 		      </li>
+		      <?php else:?>
+		      	<li class="nav-item">
+		        <a class="nav-link" href="#">Menu 2</a>
+		      </li>
+		      	<?php endif;?>
 		      <li class="nav-item">
 		        <a class="nav-link" href="#">Menu 3</a>
 		      </li>
